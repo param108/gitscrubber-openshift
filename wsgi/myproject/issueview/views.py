@@ -4,7 +4,7 @@ from models import Issue,Repository,Board,ReadPermissions
 from django.utils.cache import add_never_cache_headers
 import requests
 from django.contrib.auth.decorators import login_required
-from wobeissues import settings
+from myproject import settings
 from forms import Repoform,Boardform,Userform
 import re
 
