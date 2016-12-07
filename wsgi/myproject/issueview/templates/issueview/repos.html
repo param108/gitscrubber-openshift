@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+{%if filtstring %}
+<h2>Repositories<br><small>A list of repositories in <b><a class="btn btn-link" href="/issueview/show/{{board.user.username}}/{{board.board}}/?filter={{filtstring}}">{{board.board}}</a></b></small></h2>
+<form action="/issueview/repos/{{board.board}}/?filter={{filtstring}}" method="POST">
+{% else %}
+<h2>Repositories<br><small>A list of repositories in <b><a class="btn btn-link" href="/issueview/show/{{board.user.username}}/{{board.board}}/">{{board.board}}</a></b></small></h2>
+<form action="/issueview/repos/{{board.board}}/" method="POST">
+{% endif %}
+<table>
+{{form.as_table}}
+<tr><td>{%csrf_token%}<input type="hidden" name="filter" value="{{filtstring}}"/><input type="submit" value="Add" />
+</table>
+</form>
+<table style="margin-top:10px;" class="table table-striped">
+<tr>
+<th>repository</th><th>actions</th>
+</tr>
+{% for repo in repos %}
+<tr>
+<td>{{repo.repository}}</td>
+{%if filtstring %}
+<td><a href="/issueview/repos/delete/{{board.board}}/{{repo.id}}/?filter={{filtstring}}">Delete</a></td>
+{% else %}
+<td><a href="/issueview/repos/delete/{{board.board}}/{{repo.id}}/">Delete</a></td>
+{% endif %}
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endblock %}

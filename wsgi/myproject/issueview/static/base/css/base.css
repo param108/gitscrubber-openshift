@@ -1,0 +1,96 @@
+.login {
+  margin: 50px auto;
+  border: 1px;
+  border-radius: 3px;
+  border-style: solid;
+  width: 30%;
+
+}
+
+.header {
+margin-top:0px;
+padding-top:0px;
+padding-left:5px;
+background: #417690;
+color: #ffc;
+}
+
+.login-box {
+  border: 1px;
+  border-radius: 3px;
+}
+
+.form-group {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.username-div {
+  padding: 0px;
+}
+
+#username {
+  height:100%;
+  width: 50%
+}
+
+.errorlist {
+  color: red;
+  border: 2px red solid;
+}
+
+.team-del-wrapper {
+  width: 50%;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.team-del-div {
+  float: right;
+}
+.team-del {
+}
+
+.team-name-div {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.simple-alert {
+  display: inline-block;
+  margin: 5px;
+}
+
+.docs-pic-wrapper {
+  display:inline-block;
+}
+
+.docs-pic {
+  height: 100px;
+}
+
+
+
+.docs-img-bar {
+  text-align: center;
+}
+
+.docs-url-wrapper {
+  width: 100%;
+}
+
+.docs-url-input {
+  width:50%;
+}
+
+.docs-note-wrapper {
+  width:100%;
+}
+
+.docs-note-span {
+  color:darkmagenta;
+}
+
+.redbkgnd {
+  background: green;
+}

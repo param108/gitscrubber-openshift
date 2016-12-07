@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<div>
+<h2>Issues<br><small>list of issues in <b>{{board.board}}</b></small></h2>
+Username: <a href="/issueview/board/show/">{{board.user.username}}</a><br>
+<span >Repositories: </span>{% if repos %}
+{% for repo in repos %}
+<span style="margin: 10px;"><b>{{repo.repository}} </b></span>
+{% endfor %}<br><br>
+<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.board}}/?filter={{filtstring}}">Edit Repos</a> <a style="margin-left:10px;" class="btn btn-default" href="/issueview/refresh/{{board.id}}/?filter={{filtstring}}">Refresh</a>
+{% else %}
+<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.board}}/?filter={{filtstring}}">Edit Repos</a>
+{% endif %}<br>
+<span >Users:</span> {% for user in users %}
+<span style="margin: 10px;"><b><a style="margin: 10px;" class="btn btn-danger" href="/issueview/users/{{board.id}}/del/{{user.id}}/?filter={{filtstring}}">{{user.username}} X </a></b></span>
+{% endfor %}
+<form style="margin-left: 10x;" method="POST" action="/issueview/users/{{board.id}}/add/">
+{{userform.as_p}}
+{% csrf_token %}
+<input type="hidden" name="filter" value="{{filtstring}}"/>
+<input type="submit" value="Add User"/>
+</form>
+<table style="margin-top:10px;" class="table table-striped">
+<tr>
+<th>repository</th><th>id</th><th>title</th><th>assigned</th><th>status</th><th>created</th><th>updated</th><th>release</th><th>comments</th><th>actions</th>
+</tr>
+{% for issue in issues %}
+{% if issue.changed %}
+<tr class="redbkgnd">
+{% else %}
+<tr>
+{% endif %}
+<form action="/issueview/update/{{issue.id}}/" method="POST" id="issue_{{issue.id}}">
+<td>{{issue.repository}}</td><td><a target="_" href="{{issue.url}}">{{issue.issueid}}</a></td><td>{{issue.title}}</td><td>{{issue.assigned}}</td><td>{{issue.status}}</td><td>{{issue.created}}</td><td>{{issue.updated}}</td><td><input name="release" type="text" value="{{issue.release}}"/></td>
+<td><textarea name="comments" form="issue_{{issue.id}}">{{issue.comments}}</textarea></td><td><input type="submit" value="Update"/></td>
+{% csrf_token %}
+<input type="hidden" name="filter" value="{{filtstring}}"/>
+</form>
+</tr>
+{% endfor %}
+</div>
+{% endblock %}
