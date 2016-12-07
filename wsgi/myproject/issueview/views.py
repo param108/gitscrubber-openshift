@@ -8,12 +8,12 @@ from myproject import settings
 from forms import Repoform,Boardform,Userform
 import re
 
-GITHUB_USER = settings.GITHUB_USER
-GITHUB_PASSWORD = settings.GITHUB_PASSWORD
-AUTH = (settings.GITHUB_USER, settings.GITHUB_PASSWORD)
+#GITHUB_USER = settings.GITHUB_USER
+#GITHUB_PASSWORD = settings.GITHUB_PASSWORD
+#AUTH = (settings.GITHUB_USER, settings.GITHUB_PASSWORD)
 
-COMPANY = settings.COMPANY
-REPOS = settings.REPOS
+#COMPANY = settings.COMPANY
+#REPOS = settings.REPOS
            
 def get_issues(r,REPO):
   "output a list of issues to csv"
