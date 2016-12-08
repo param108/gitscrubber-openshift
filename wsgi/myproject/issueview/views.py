@@ -7,6 +7,8 @@ from django.contrib.auth.decorators import login_required
 from myproject import settings
 from forms import Repoform,Boardform,Userform
 import re
+import random
+import string
 
 #GITHUB_USER = settings.GITHUB_USER
 #GITHUB_PASSWORD = settings.GITHUB_PASSWORD
@@ -199,7 +201,11 @@ def issues_show(request, owner, board):
     users = ReadPermissions.objects.filter(board=boards[0])
     if filt != "":
       issue_list = apply_filter(issue_list, str(filt))
-    ret =  render(request, "issueview/list.html", { "userform": Userform(), 
+    randomstr = ''.join(random.choice(string.letters) for i in xrange(10))
+    board_state_secret=boards[0].board+"@"+str(filt)+"@"+randomstr
+    ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_SECRET, 
+                                                    "board_state_secret": board_state_secret,
+                                                    "userform": Userform(), 
                                                     "issues":issue_list,
                                                     "filtstring":str(filt),
                                                     "users" : users,

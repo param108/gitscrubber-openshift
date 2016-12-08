@@ -2,6 +2,10 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User 
 from django.db import models
 
+class OauthCheck(models.Model):
+  user = models.ForeignKey(User)
+  state = models.CharField(200)
+
 class Board(models.Model):
   board = models.CharField(max_length=50)
   user = models.ForeignKey(User)
