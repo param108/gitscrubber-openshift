@@ -25,5 +25,6 @@ urlpatterns = [
     url(r'^board/del/(?P<boardid>[0-9]+)/$', views.del_board),
     url(r'^board/edit/(?P<boardid>[0-9]+)/$', views.edit_board),
     url(r'^users/(?P<boardid>[0-9]+)/del/(?P<userid>[0-9]+)/$', views.user_del),
-    url(r'^users/(?P<boardid>[0-9]+)/add/$', views.user_add)
+    url(r'^users/(?P<boardid>[0-9]+)/add/$', views.user_add),
+    url(r'^authorize/', views.issues_authorize)
 ]

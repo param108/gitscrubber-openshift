@@ -34,9 +34,9 @@ def get_issues(r,REPO):
 #            #csvout.writerow([issue['number'], issue['title'].encode('utf-8'), issue['body'].encode('utf-8'), issue['created_at'], issue['updated_at']])
 #            csvout.writerow([ str(x).replace(',','-') for x in [REPO, issue['number'], issue['title'].encode('utf-8'), issue['url'], issue['created_at'], issue['updated_at']]])
 # 
-def pull_issues(REPO):
+def pull_issues(REPO, access_token, token_type):
   ISSUES_FOR_REPO_URL = 'https://api.github.com/repos/%s/issues' % REPO
-  r = requests.get(ISSUES_FOR_REPO_URL, auth=AUTH)
+  r = requests.get(ISSUES_FOR_REPO_URL, headers={'Authorization': token_type+" "+access_token})
   issues=[]
   issues.extend(get_issues(r,REPO))
 
@@ -47,7 +47,7 @@ def pull_issues(REPO):
         [link.split(';') for link in
         r.headers['link'].split(',')]])
     while 'last' in pages and 'next' in pages:
-      r = requests.get(pages['next'], auth=AUTH)
+      r = requests.get(pages['next'], headers={'Authorization': token_type+" "+access_token})
       issues.extend(get_issues(r,REPO))
       if pages['next'] == pages['last']:
         break
@@ -122,10 +122,10 @@ def issues_refresh(request,boardid):
   for i in REPOS:
     issues.extend(pull_issues(i))
   for issue in issues:
-    try:
-      saved_issue = Issue.objects.filter(board=boards[0]).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
+    saved_issue = Issue.objects.filter(board=boards[0]).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
+    if len(saved_issue) > 0:
       copy_existing(saved_issue[0], issue, request.user)
-    except:
+    else:
       create_new(boards[0], issue, request.user)
   filtstring=""
   if len(filt) > 0:
@@ -202,7 +202,11 @@ def issues_show(request, owner, board):
     if filt != "":
       issue_list = apply_filter(issue_list, str(filt))
     randomstr = ''.join(random.choice(string.letters) for i in xrange(10))
-    board_state_secret=boards[0].board+"@"+str(filt)+"@"+randomstr
+    board_state_secret=str(boards[0].id)+"@"+str(filt)+"@"+randomstr
+    oauth_details = OauthCheck()
+    oauth_details.user = request.user
+    oauth_details.state = board_state_secret
+    oauth_details.save() 
     ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_ID, 
                                                     "board_state_secret": board_state_secret,
                                                     "userform": Userform(), 
@@ -248,6 +252,55 @@ def issues_repos(request, board):
                                                "filtstring": filtstring})
   add_never_cache_headers(ret)
   return ret 
+
+@login_required(login_url=('/login/'))
+def issues_authorize(request):
+  if request.method == "GET":
+    code = request.GET.get('code','')
+    state = request.GET.get('state','')
+    try:
+      oauth_details = OauthCheck.objects.get(state=state,user=request.user)
+      oauth_details.delete()
+    except:
+      ret = HttpResponseRedirect('/issueview/board/show/')
+      add_never_cache_headers(ret)
+      return ret 
+    r = requests.post("https://github.com/login/oauth/access_token",
+      {"client_id": settings.CLIENT_ID,
+       "client_secret":settings.CLIENT_SECRET,
+       "code":code,
+       "state":state }, headers={'Accept': 'application/json'})
+    response = r.json()
+    if 'repo' not in response['scope'].split(','):
+      # not authenticated, so print a message and end it.
+      ret = HttpResponse('Failed to authorize. Exitting.')
+      add_never_cache_headers(ret)
+      return ret 
+    #fully authorized
+    access_token = response["access_token"]
+    token_type = response["token_type"]
+    boardid = state.split("@")[0]
+    filt = state.split("@")[1]
+
+    board = Board.objects.get(pk=boardid)
+    REPOS=[x.repository for x in Repository.objects.filter(board=boards[0])]
+    issues=[]
+    for i in REPOS:
+      issues.extend(pull_issues(i,access_token, token_type))
+    for issue in issues:
+      saved_issue = Issue.objects.filter(board=board).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
+      if len(saved_issue) > 0:
+        copy_existing(saved_issue[0], issue, request.user)
+      else:
+        create_new(boards[0], issue, request.user)
+    filtstring=""
+    if len(filt) > 0:
+      filtstring="?filter="+filt
+    ret  = HttpResponseRedirect("/issueview/show/"+boards.user.username+"/"+boards[0].board+"/"+filtstring)
+    add_never_cache_headers(ret)
+    return ret
+
+ 
 
 @login_required(login_url=('/login/'))
 def issues_repo_delete(request, board, repoid):
