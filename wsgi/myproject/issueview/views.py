@@ -203,7 +203,7 @@ def issues_show(request, owner, board):
       issue_list = apply_filter(issue_list, str(filt))
     randomstr = ''.join(random.choice(string.letters) for i in xrange(10))
     board_state_secret=boards[0].board+"@"+str(filt)+"@"+randomstr
-    ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_SECRET, 
+    ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_ID, 
                                                     "board_state_secret": board_state_secret,
                                                     "userform": Userform(), 
                                                     "issues":issue_list,

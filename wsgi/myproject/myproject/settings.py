@@ -116,3 +116,5 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(WSGI_DIR, 'static')
+
+CLIENT_ID ='f3ecdde927a0d2e23bcb'
