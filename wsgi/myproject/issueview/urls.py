@@ -16,7 +16,6 @@ Including another URLconf
 from django.conf.urls import url
 import views
 urlpatterns = [
-    url(r'^refresh/(?P<boardid>[0-9]+)/', views.issues_refresh),
     url(r'^update/(?P<issueid>[0-9]+)/', views.issues_update),
     url(r'^show/(?P<owner>[a-z_0-9]+)/(?P<board>[a-z_0-9]+)/$', views.issues_show),
     url(r'^repos/(?P<boardid>[0-9]+)/$', views.issues_repos),
