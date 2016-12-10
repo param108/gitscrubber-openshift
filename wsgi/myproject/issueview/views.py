@@ -195,7 +195,7 @@ def issues_show(request, owner, board):
     if boards[0].user != request.user:
       is_self = False
 
-    repos = Repository.objects.filter(board__board=board).filter(board__user=request.user)
+    repos = Repository.objects.filter(board__board=board).filter(board__user=board.user)
     filt = request.GET.get("filter","")
     issue_list = Issue.objects.filter(board__board=board)
     users = ReadPermissions.objects.filter(board=boards[0])
@@ -208,6 +208,7 @@ def issues_show(request, owner, board):
     oauth_details.state = board_state_secret
     oauth_details.save() 
     ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_ID, 
+                                                    "thisuser": request.user,
                                                     "board_state_secret": board_state_secret,
                                                     "userform": Userform(), 
                                                     "issues":issue_list,
