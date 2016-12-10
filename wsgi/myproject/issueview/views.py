@@ -296,7 +296,7 @@ def issues_authorize(request):
     filtstring=""
     if len(filt) > 0:
       filtstring="?filter="+filt
-    ret  = HttpResponseRedirect("/issueview/show/"+boards.user.username+"/"+board.board+"/"+filtstring)
+    ret  = HttpResponseRedirect("/issueview/show/"+board.user.username+"/"+board.board+"/"+filtstring)
     add_never_cache_headers(ret)
     return ret
 
