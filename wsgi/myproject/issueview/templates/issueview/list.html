@@ -9,7 +9,7 @@ Username: <a href="/issueview/board/show/">{{thisuser}}</a><br>
 {% endfor %}<br><br>
 <a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.id}}/?filter={{filtstring}}">Edit Repos</a> <a style="margin-left:10px;" class="btn btn-default" href="https://github.com/login/oauth/authorize?client_id={{client_secret}}&scope=repo&state={{board_state_secret}}">Refresh</a>
 {% else %}
-<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.board}}/?filter={{filtstring}}">Edit Repos</a>
+<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.id}}/?filter={{filtstring}}">Edit Repos</a>
 {% endif %}<br>
 <span >Users:</span> {% for user in users %}
 <span style="margin: 10px;"><b><a style="margin: 10px;" class="btn btn-danger" href="/issueview/users/{{board.id}}/del/{{user.id}}/?filter={{filtstring}}">{{user.username}} X </a></b></span>

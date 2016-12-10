@@ -106,42 +106,6 @@ def copy_existing(saved,issue,user):
 
 # Create your views here.
 @login_required(login_url=('/login/'))
-def issues_refresh(request,boardid):
-  boards = Board.objects.filter(pk=boardid)
-  filt = request.GET.get("filter","")
-  if len(boards) == 0:
-    ret  = HttpResponseRedirect("/issueview/board/show/")
-    add_never_cache_headers(ret)
-    return ret
-  if boards[0].user != request.user and len(ReadPermissions.objects.filter(username=request.user.username).filter(board_id = boardid)) == 0:
-    ret  = HttpResponseRedirect("/issueview/board/show/")
-    add_never_cache_headers(ret)
-    return ret
-  REPOS=[x.repository for x in Repository.objects.filter(board=boards[0])]
-  issues=[]
-  for i in REPOS:
-    issues.extend(pull_issues(i))
-  issue_cache={}
-  for issue in issues:
-    issue_cache[(issue['number'],issue['repository'])] = 1
-    saved_issue = Issue.objects.filter(board=boards[0]).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
-    if len(saved_issue) > 0:
-      copy_existing(saved_issue[0], issue, request.user)
-    else:
-      create_new(boards[0], issue, request.user)
-  # now do the reverse. Mark all unseen issues as closed
-  for saved_issue in Issue.objects.filter(board=boards[0]):
-    if (saved_issue.issueid,saved_issue.repository) not in issue_cache:
-      saved_issue.status = "closed"
-      saved_issue.save()
-  filtstring=""
-  if len(filt) > 0:
-    filtstring="?filter="+filt
-  ret  = HttpResponseRedirect("/issueview/show/"+boards[0].user.username+"/"+boards[0].board+"/"+filtstring)
-  add_never_cache_headers(ret)
-  return ret
-
-@login_required(login_url=('/login/'))
 def issues_update(request,issueid):
   if request.method == "POST":
     issue = Issue.objects.get(pk=issueid)
@@ -305,12 +269,19 @@ def issues_authorize(request):
     try:
       for i in REPOS:
         issues.extend(pull_issues(i,access_token, token_type))
+      issue_cache = {}
       for issue in issues:
+        issue_cache[(issue["number"],issue["repository"])] = 1
         saved_issue = Issue.objects.filter(board=board).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
         if len(saved_issue) > 0:
           copy_existing(saved_issue[0], issue, board.user)
         else:
           create_new(board, issue, request.user)
+      # now do the reverse. Mark all unseen issues as closed
+      for saved_issue in Issue.objects.filter(board=boards[0]):
+        if (saved_issue.issueid,saved_issue.repository) not in issue_cache:
+          saved_issue.status = "closed"
+          saved_issue.save()
     except:
       github_rc = 1
     filtstring=""
