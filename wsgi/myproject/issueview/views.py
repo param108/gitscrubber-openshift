@@ -195,7 +195,7 @@ def issues_show(request, owner, board):
     if boards[0].user != request.user:
       is_self = False
 
-    repos = Repository.objects.filter(board__board=board).filter(board__user=board.user)
+    repos = Repository.objects.filter(board__board=board).filter(board__user=boards[0].user)
     filt = request.GET.get("filter","")
     issue_list = Issue.objects.filter(board__board=board)
     users = ReadPermissions.objects.filter(board=boards[0])
