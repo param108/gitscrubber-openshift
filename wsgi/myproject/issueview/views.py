@@ -271,7 +271,7 @@ def issues_authorize(request):
         issues.extend(pull_issues(i,access_token, token_type))
       issue_cache = {}
       for issue in issues:
-        issue_cache[(issue["number"],issue["repository"])] = 1
+        issue_cache[(str(issue["number"]),str(issue["repository"]))] = 1
         saved_issue = Issue.objects.filter(board=board).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
         if len(saved_issue) > 0:
           copy_existing(saved_issue[0], issue, board.user)
