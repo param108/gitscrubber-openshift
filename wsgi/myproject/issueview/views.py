@@ -283,7 +283,7 @@ def issues_authorize(request):
     filt = state.split("~")[1]
 
     board = Board.objects.get(pk=boardid)
-    REPOS=[x.repository for x in Repository.objects.filter(board=boards[0])]
+    REPOS=[x.repository for x in Repository.objects.filter(board=board)]
     issues=[]
     for i in REPOS:
       issues.extend(pull_issues(i,access_token, token_type))
@@ -292,7 +292,7 @@ def issues_authorize(request):
       if len(saved_issue) > 0:
         copy_existing(saved_issue[0], issue, request.user)
       else:
-        create_new(boards[0], issue, request.user)
+        create_new(board, issue, request.user)
     filtstring=""
     if len(filt) > 0:
       filtstring="?filter="+filt
