@@ -221,13 +221,13 @@ def issues_show(request, owner, board):
     return ret
 
 @login_required(login_url=('/login/'))
-def issues_repos(request, board):
-  boards = Board.objects.filter(board=board).filter(user=request.user)
+def issues_repos(request, boardid):
+  boards = Board.objects.filter(pk=boardid).filter(user=request.user)
   if len(boards) == 0: 
     ret = HttpResponseRedirect('/issueview/board/show/')
     add_never_cache_headers(ret)
     return ret 
-
+  board=boards[0].board
   if request.method == "GET":
     filtstring=request.GET.get("filter","")
     repos = Repository.objects.filter(board__user = request.user).filter(board__board=board)
