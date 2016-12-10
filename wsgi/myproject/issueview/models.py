@@ -4,7 +4,7 @@ from django.db import models
 
 class OauthCheck(models.Model):
   user = models.ForeignKey(User)
-  state = models.CharField(200)
+  state = models.CharField(max_length=200)
 
 class Board(models.Model):
   board = models.CharField(max_length=50)

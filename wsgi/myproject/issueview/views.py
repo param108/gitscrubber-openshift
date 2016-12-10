@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect,JsonResponse,HttpResponseNotFound
-from models import Issue,Repository,Board,ReadPermissions
+from models import Issue,Repository,Board,ReadPermissions,OauthCheck
 from django.utils.cache import add_never_cache_headers
 import requests
 from django.contrib.auth.decorators import login_required
