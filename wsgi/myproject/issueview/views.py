@@ -222,12 +222,19 @@ def issues_show(request, owner, board):
 
 @login_required(login_url=('/login/'))
 def issues_repos(request, boardid):
-  boards = Board.objects.filter(pk=boardid).filter(user=request.user)
+  boards = Board.objects.filter(pk=boardid)
   if len(boards) == 0: 
     ret = HttpResponseRedirect('/issueview/board/show/')
     add_never_cache_headers(ret)
     return ret 
+
+  if boards[0].user != request.user and len(ReadPermissions.objects.filter(username=request.user.username).filter(board = boards[0])) == 0:
+    ret  = HttpResponseRedirect("/issueview/board/show/")
+    add_never_cache_headers(ret)
+    return ret
+
   board=boards[0].board
+
   if request.method == "GET":
     filtstring=request.GET.get("filter","")
     repos = Repository.objects.filter(board__user = request.user).filter(board__board=board)
@@ -246,7 +253,7 @@ def issues_repos(request, boardid):
     newrepo.board = boards[0]
     newrepo.save()
     form = Repoform()
-  repos = Repository.objects.filter(board__user = request.user)
+  repos = Repository.objects.filter(board = boards[0])
   ret = render(request,"issueview/repos.html",{"board": boards[0],
                                                "form": form,
                                                "repos": repos,
@@ -313,12 +320,12 @@ def issues_authorize(request):
 
 @login_required(login_url=('/login/'))
 def issues_repo_delete(request, boardid, repoid):
-  board = Board.objects.filter(pk=boardid)
+  board = Board.objects.get(pk=boardid)
   if board.user != request.user and len(ReadPermissions.objects.filter(username=request.user.username).filter(board_id = boardid)) == 0:
     ret = HttpResponseRedirect('/issueview/board/show/')
     add_never_cache_headers(ret)
     return ret 
-  repo = Repository.objects.filter(board__user=board.user).filter(pk=repoid)
+  repo = Repository.objects.filter(board=board).filter(pk=repoid)
   if len(repo) == 0:
     ret = HttpResponseRedirect('/issueview/repos/'+boardid+"/")
     add_never_cache_headers(ret)
@@ -328,7 +335,7 @@ def issues_repo_delete(request, boardid, repoid):
   if len(filtstring):
     ret = HttpResponseRedirect('/issueview/repos/'+boardid+"/"+"?filter="+filtstring)
   else:
-    ret = HttpResponseRedirect('/issueview/repos/'+board+"/")
+    ret = HttpResponseRedirect('/issueview/repos/'+boardid+"/")
   add_never_cache_headers(ret)
   return ret 
  
