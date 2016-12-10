@@ -121,12 +121,19 @@ def issues_refresh(request,boardid):
   issues=[]
   for i in REPOS:
     issues.extend(pull_issues(i))
+  issue_cache={}
   for issue in issues:
+    issue_cache[(issue['number'],issue['repository'])] = 1
     saved_issue = Issue.objects.filter(board=boards[0]).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
     if len(saved_issue) > 0:
       copy_existing(saved_issue[0], issue, request.user)
     else:
       create_new(boards[0], issue, request.user)
+  # now do the reverse. Mark all unseen issues as closed
+  for saved_issue in Issue.objects.filter(board=boards[0]):
+    if (saved_issue.issueid,saved_issue.repository) not in issue_cache:
+      saved_issue.status = "closed"
+      saved_issue.save()
   filtstring=""
   if len(filt) > 0:
     filtstring="?filter="+filt
@@ -138,7 +145,7 @@ def issues_refresh(request,boardid):
 def issues_update(request,issueid):
   if request.method == "POST":
     issue = Issue.objects.get(pk=issueid)
-    if issue.user != request.user and len(ReadPermissions.objects.filter(username=request.user.username).filter(board = issue.board)) == 0:
+    if issue.board.user != request.user and len(ReadPermissions.objects.filter(username=request.user.username).filter(board = issue.board)) == 0:
       ret  = HttpResponseRedirect("/issueview/board/show/")
       add_never_cache_headers(ret)
       return ret
@@ -237,7 +244,7 @@ def issues_repos(request, boardid):
 
   if request.method == "GET":
     filtstring=request.GET.get("filter","")
-    repos = Repository.objects.filter(board__user = request.user).filter(board__board=board)
+    repos = Repository.objects.filter(board=boards[0])
     form = Repoform()
     ret = render(request,"issueview/repos.html",{"board": boards[0],
                                                  "form": form,
