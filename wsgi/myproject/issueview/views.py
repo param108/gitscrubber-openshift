@@ -290,13 +290,13 @@ def issues_authorize(request):
     for issue in issues:
       saved_issue = Issue.objects.filter(board=board).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
       if len(saved_issue) > 0:
-        copy_existing(saved_issue[0], issue, request.user)
+        copy_existing(saved_issue[0], issue, board.user)
       else:
         create_new(board, issue, request.user)
     filtstring=""
     if len(filt) > 0:
       filtstring="?filter="+filt
-    ret  = HttpResponseRedirect("/issueview/show/"+boards.user.username+"/"+boards[0].board+"/"+filtstring)
+    ret  = HttpResponseRedirect("/issueview/show/"+boards.user.username+"/"+board.board+"/"+filtstring)
     add_never_cache_headers(ret)
     return ret
 
