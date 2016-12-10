@@ -285,18 +285,26 @@ def issues_authorize(request):
     board = Board.objects.get(pk=boardid)
     REPOS=[x.repository for x in Repository.objects.filter(board=board)]
     issues=[]
-    for i in REPOS:
-      issues.extend(pull_issues(i,access_token, token_type))
-    for issue in issues:
-      saved_issue = Issue.objects.filter(board=board).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
-      if len(saved_issue) > 0:
-        copy_existing(saved_issue[0], issue, board.user)
-      else:
-        create_new(board, issue, request.user)
+
+    github_rc = 0
+    try:
+      for i in REPOS:
+        issues.extend(pull_issues(i,access_token, token_type))
+      for issue in issues:
+        saved_issue = Issue.objects.filter(board=board).filter(issueid = str(issue['number'])).filter(repository=str(issue['repository']))      
+        if len(saved_issue) > 0:
+          copy_existing(saved_issue[0], issue, board.user)
+        else:
+          create_new(board, issue, request.user)
+    except:
+      github_rc = 1
     filtstring=""
     if len(filt) > 0:
       filtstring="?filter="+filt
-    ret  = HttpResponseRedirect("/issueview/show/"+board.user.username+"/"+board.board+"/"+filtstring)
+    if github_rc != 0:
+      ret = render(request, "issueview/github_error.html", { "url": "/issueview/show/"+board.user.username+"/"+board.board+"/"+filtstring})
+    else:
+      ret  = HttpResponseRedirect("/issueview/show/"+board.user.username+"/"+board.board+"/"+filtstring)
     add_never_cache_headers(ret)
     return ret
 
