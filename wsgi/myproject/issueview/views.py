@@ -278,7 +278,7 @@ def issues_authorize(request):
         else:
           create_new(board, issue, request.user)
       # now do the reverse. Mark all unseen issues as closed
-      for saved_issue in Issue.objects.filter(board=boards[0]):
+      for saved_issue in Issue.objects.filter(board=board):
         if (saved_issue.issueid,saved_issue.repository) not in issue_cache:
           saved_issue.status = "closed"
           saved_issue.save()
