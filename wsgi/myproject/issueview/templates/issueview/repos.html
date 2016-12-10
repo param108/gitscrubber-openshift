@@ -6,7 +6,7 @@
 <form action="/issueview/repos/{{board.board}}/?filter={{filtstring}}" method="POST">
 {% else %}
 <h2>Repositories<br><small>A list of repositories in <b><a class="btn btn-link" href="/issueview/show/{{board.user.username}}/{{board.board}}/">{{board.board}}</a></b></small></h2>
-<form action="/issueview/repos/{{board.board}}/" method="POST">
+<form action="/issueview/repos/{{board.id}}/" method="POST">
 {% endif %}
 <table>
 {{form.as_table}}
@@ -21,9 +21,9 @@
 <tr>
 <td>{{repo.repository}}</td>
 {%if filtstring %}
-<td><a href="/issueview/repos/delete/{{board.board}}/{{repo.id}}/?filter={{filtstring}}">Delete</a></td>
+<td><a href="/issueview/repos/delete/{{board.id}}/{{repo.id}}/?filter={{filtstring}}">Delete</a></td>
 {% else %}
-<td><a href="/issueview/repos/delete/{{board.board}}/{{repo.id}}/">Delete</a></td>
+<td><a href="/issueview/repos/delete/{{board.id}}/{{repo.id}}/">Delete</a></td>
 {% endif %}
 </tr>
 {% endfor %}

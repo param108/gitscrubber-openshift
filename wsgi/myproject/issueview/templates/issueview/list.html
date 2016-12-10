@@ -7,7 +7,7 @@ Username: <a href="/issueview/board/show/">{{board.user.username}}</a><br>
 {% for repo in repos %}
 <span style="margin: 10px;"><b>{{repo.repository}} </b></span>
 {% endfor %}<br><br>
-<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.board}}/?filter={{filtstring}}">Edit Repos</a> <a style="margin-left:10px;" class="btn btn-default" href="https://github.com/login/oauth/authorize?client_id={{client_secret}}&scope=repo&state={{board_state_secret}}">Refresh</a>
+<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.id}}/?filter={{filtstring}}">Edit Repos</a> <a style="margin-left:10px;" class="btn btn-default" href="https://github.com/login/oauth/authorize?client_id={{client_secret}}&scope=repo&state={{board_state_secret}}">Refresh</a>
 {% else %}
 <a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.board}}/?filter={{filtstring}}">Edit Repos</a>
 {% endif %}<br>
