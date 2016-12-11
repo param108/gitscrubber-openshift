@@ -234,7 +234,7 @@ def issues_show(request, owner, board):
       if labelsearch:
         issue_list = search_issues_by_label(labelsearch, issue_list)
     randomstr = ''.join(random.choice(string.letters) for i in xrange(10))
-    board_state_secret=str(boards[0].id)+"~"+str(filt)+"~"+randomstr
+    board_state_secret=str(boards[0].id)+"x~x"+str(filt)+"x~x"+randomstr
     oauth_details = OauthCheck()
     oauth_details.user = request.user
     oauth_details.state = board_state_secret
@@ -322,8 +322,8 @@ def issues_authorize(request):
     #fully authorized
     access_token = response["access_token"]
     token_type = response["token_type"]
-    boardid = state.split("~")[0]
-    filt = state.split("~")[1]
+    boardid = state.split("x~x")[0]
+    filt = state.split("x~x")[1]
 
     board = Board.objects.get(pk=boardid)
     REPOS=[x.repository for x in Repository.objects.filter(board=board)]
