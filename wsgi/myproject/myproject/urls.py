@@ -22,4 +22,5 @@ urlpatterns = [
     url(r'^issueview/', include('issueview.urls')),
     url(r'^login/$', django.contrib.auth.views.login),
     url(r'^logout/$', django.contrib.auth.views.logout), 
+    url(r'^accounts/', include('registration.backends.simple.urls'))
 ]
