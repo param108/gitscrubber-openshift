@@ -149,11 +149,15 @@ def apply_filter(issues, filt):
   return issues
 
 def calculate_filterform(filt):
+  if len(filt) == 0:
+    return Filterform()
   filtlist = filt.split(",")
   filtdata = {}
   print "filt:"+str(filtlist)
   for f in filtlist:
     fvals = f.split(":")
+    if len(fvals) < 2:
+      continue
     fname = fvals[0]
     fv = fvals[1]
     print fname+":"+fv
@@ -195,6 +199,7 @@ def issues_show(request, owner, board):
     oauth_details.state = board_state_secret
     oauth_details.save() 
     filterform=calculate_filterform(filt)
+      
     ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_ID, 
                                                     "thisuser": request.user,
                                                     "board_state_secret": board_state_secret,
@@ -467,7 +472,7 @@ def issues_filter(request, owner, board):
         if len(form.cleaned_data[fname]) > 0:
           if len(filtstring) > 0:
             filtstring += ","
-          filtstring+=fname+":"+form.cleaned_data[fname]
+          filtstring+=fname+":"+form.cleaned_data[fname].strip()
     if len(filtstring) > 0:
       filtstring = urllib.encode({"filter": filtstring})
     ret  = HttpResponseRedirect("/issueview/show/"+owner+"/"+board+"/"+filtstring)
