@@ -3,7 +3,7 @@
 <div>
 {%if filtstring %}
 <h2>Repositories<br><small>A list of repositories in <b><a class="btn btn-link" href="/issueview/show/{{board.user.username}}/{{board.board}}/?filter={{filtstring}}">{{board.board}}</a></b></small></h2>
-<form action="/issueview/repos/{{board.board}}/?filter={{filtstring}}" method="POST">
+<form action="/issueview/repos/{{board.id}}/?filter={{filtstring}}" method="POST">
 {% else %}
 <h2>Repositories<br><small>A list of repositories in <b><a class="btn btn-link" href="/issueview/show/{{board.user.username}}/{{board.board}}/">{{board.board}}</a></b></small></h2>
 <form action="/issueview/repos/{{board.id}}/" method="POST">
