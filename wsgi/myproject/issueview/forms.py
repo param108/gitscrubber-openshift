@@ -14,5 +14,6 @@ class Filterform(forms.Form):
   assigned=forms.CharField(max_length=50,required=False)
   repository=forms.CharField(max_length=50,required=False)
   status=forms.CharField(max_length=50,required=False)
+  labels=forms.CharField(max_length=200,required=False)
 
-FILTER_OPTIONS = ["release","assigned","repository","status"]
+FILTER_OPTIONS = ["release","assigned","repository","status","labels"]

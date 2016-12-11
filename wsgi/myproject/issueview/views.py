@@ -178,11 +178,31 @@ def calculate_filterform(filt):
     fv = fvals[1]
     print fname+":"+fv
     if fname in FILTER_OPTIONS:
-      filtdata[fname]=fv 
+      if fname!="labels":
+        filtdata[fname]=fv 
+      else:
+        filtdata[fname]=fv.strip().replace("~",",") 
   filterform=Filterform(initial=filtdata)
   return filterform
 
 def search_issues_by_label(labelsearch, issue_list):
+  labels = labelsearch.split("~")
+  for label in labels:
+    negate = False
+    if label[0] == "^":
+      #negate search
+      negate = True
+      label = label[1:]
+    new_list = []
+    for issue in issue_list:
+      known_labels = issue.labels.split(",")
+      if label in known_labels:
+        if not negate:
+          new_list.append(issue)
+      else:
+        if negate:
+          new_list.append(issue)
+    issue_list = new_list
   return issue_list
   
 
@@ -493,7 +513,10 @@ def issues_filter(request, owner, board):
         if len(form.cleaned_data[fname]) > 0:
           if len(filtstring) > 0:
             filtstring += ","
-          filtstring+=fname+":"+form.cleaned_data[fname].strip()
+          if fname != "labels":
+            filtstring+=fname+":"+form.cleaned_data[fname].strip()
+          else:
+            filtstring+=fname+":"+form.cleaned_data[fname].strip().replace(",","~")
       if len(filtstring) > 0:
         filtstring = urllib.urlencode({"filter": filtstring})
       ret  = HttpResponseRedirect("/issueview/show/"+owner+"/"+board+"/?"+filtstring)
