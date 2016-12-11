@@ -2,7 +2,7 @@
 {% block content %}
 <div>
 <h2>Issues<br><small>list of issues in <b>{{board.board}}</b></small></h2>
-Username: <a href="/issueview/board/show/">{{thisuser}}</a> <a href="/accounts/">Edit Profile</a> <br>
+Username: <a href="/issueview/board/show/">{{thisuser}}</a> <a href="/accounts/password/change/">Edit Password</a> <br>
 <span >Repositories: </span>{% if repos %}
 {% for repo in repos %}
 <span style="margin: 10px;"><b>{{repo.repository}} </b></span>
