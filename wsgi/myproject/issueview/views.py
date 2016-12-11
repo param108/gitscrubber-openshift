@@ -114,7 +114,7 @@ def copy_existing(saved,issue,user):
   newlabels=extract_labels(issue)
   if saved.labels != newlabels:
     saved.changed = True
-    saved.status = newlabels
+    saved.labels = newlabels
   saved.save()
 
 # Create your views here.
