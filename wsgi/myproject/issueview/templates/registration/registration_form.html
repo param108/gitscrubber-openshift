@@ -5,14 +5,16 @@
   <h1>Registration</h1>
 </div>
 
-<div class="row">
+<div>
   <form method="post" action="{% url 'registration_register' %}">
+  <table>
     {% csrf_token %}
-    {{ form }}
+    {{ form.as_table }}
     <br>
     <input type="submit" class="btn" value="register" />
     <input type="hidden" name="next" value="{{ next }}" />
   </form>
+  </table>
 </div>
 
 {% endblock %}
