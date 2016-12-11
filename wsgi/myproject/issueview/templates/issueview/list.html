@@ -14,12 +14,16 @@ Username: <a href="/issueview/board/show/">{{thisuser}}</a><br>
 <span >Users:</span> {% for user in users %}
 <span style="margin: 10px;"><b><a style="margin: 10px;" class="btn btn-danger" href="/issueview/users/{{board.id}}/del/{{user.id}}/?filter={{filtstring}}">{{user.username}} X </a></b></span>
 {% endfor %}
-<form style="margin-left: 10x;" method="POST" action="/issueview/users/{{board.id}}/add/">
+<form style="margin-left: 10px;" method="POST" action="/issueview/users/{{board.id}}/add/">
 {{userform.as_p}}
 {% csrf_token %}
 <input type="hidden" name="filter" value="{{filtstring}}"/>
 <input type="submit" value="Add User"/>
 </form>
+<form style="margin-left: 10px;" method="GET" action="/issueview/filter/{{board.board}}/{{board.user.username}}/">
+{{filterform}} <input type="submit" value="Filter"/>
+</form>
+
 <table style="margin-top:10px;" class="table table-striped">
 <tr>
 <th>repository</th><th>id</th><th>title</th><th>assigned</th><th>status</th><th>created</th><th>updated</th><th>release</th><th>comments</th><th>actions</th>

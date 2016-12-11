@@ -5,11 +5,11 @@ from django.utils.cache import add_never_cache_headers
 import requests
 from django.contrib.auth.decorators import login_required
 from myproject import settings
-from forms import Repoform,Boardform,Userform
+from forms import Repoform,Boardform,Userform,Filterform,FILTER_OPTIONS
 import re
 import random
 import string
-
+import urllib
 #GITHUB_USER = settings.GITHUB_USER
 #GITHUB_PASSWORD = settings.GITHUB_PASSWORD
 #AUTH = (settings.GITHUB_USER, settings.GITHUB_PASSWORD)
@@ -129,6 +129,7 @@ def issues_update(request,issueid):
   add_never_cache_headers(ret)
   return ret
 
+
 def apply_filter(issues, filt):
   filtlist = filt.split(",")
   print "filt:"+str(filtlist)
@@ -146,6 +147,21 @@ def apply_filter(issues, filt):
     elif fname == 'repository':
       issues= issues.filter(repository=fv)
   return issues
+
+def calculate_filterform(filt):
+  filtlist = filt.split(",")
+  filtdata = {}
+  print "filt:"+str(filtlist)
+  for f in filtlist:
+    fvals = f.split(":")
+    fname = fvals[0]
+    fv = fvals[1]
+    print fname+":"+fv
+    if fname in FILTER_OPTIONS:
+      filtdata[fname]=fv 
+  filterform=Filterform(initial=filtdata)
+  return filterform
+
 
 @login_required(login_url=('/login/'))
 def issues_show(request, owner, board):
@@ -178,12 +194,14 @@ def issues_show(request, owner, board):
     oauth_details.user = request.user
     oauth_details.state = board_state_secret
     oauth_details.save() 
+    filterform=calculate_filterform(filt)
     ret =  render(request, "issueview/list.html", { "client_secret": settings.CLIENT_ID, 
                                                     "thisuser": request.user,
                                                     "board_state_secret": board_state_secret,
                                                     "userform": Userform(), 
                                                     "issues":issue_list,
                                                     "filtstring":str(filt),
+                                                    "filterform":filterform,
                                                     "users" : users,
                                                     "repos": repos,
                                                     "board": boards[0],
@@ -438,3 +456,21 @@ def user_del(request, boardid, userid):
   ret  = HttpResponseRedirect("/issueview/show/"+boards[0].user.username+"/"+boards[0].board+"/"+filtstring)
   add_never_cache_headers(ret)
   return ret
+
+@login_required(login_url=('/login/'))
+def issues_filter(request, owner, board):
+  if request.method == "GET":
+    form = Filterform(request.GET)
+    if form.is_valid():
+      filtstring=""  
+      for fname in FILTER_OPTIONS:
+        if len(form.cleaned_data[fname]) > 0:
+          if len(filtstring) > 0:
+            filtstring += ","
+          filtstring+=fname+":"+form.cleaned_data[fname]
+    if len(filtstring) > 0:
+      filtstring = urllib.encode({"filter": filtstring})
+    ret  = HttpResponseRedirect("/issueview/show/"+owner+"/"+board+"/"+filtstring)
+    return ret
+     
+ 
