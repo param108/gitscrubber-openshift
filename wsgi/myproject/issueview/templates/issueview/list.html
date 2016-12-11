@@ -6,8 +6,8 @@ Username: <a href="/issueview/board/show/">{{thisuser}}</a><br>
 <span >Repositories: </span>{% if repos %}
 {% for repo in repos %}
 <span style="margin: 10px;"><b>{{repo.repository}} </b></span>
-{% endfor %}<br><br>
-<a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.id}}/?filter={{filtstring}}">Edit Repos</a> <a style="margin-left:10px;" class="btn btn-default" href="https://github.com/login/oauth/authorize?client_id={{client_secret}}&scope=repo&state={{board_state_secret}}">Refresh</a>
+{% endfor %}
+ <a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.id}}/?filter={{filtstring}}">Edit Repos</a> <a style="margin-left:10px;" class="btn btn-default" href="https://github.com/login/oauth/authorize?client_id={{client_secret}}&scope=repo&state={{board_state_secret}}">Refresh</a>
 {% else %}
 <a style="margin-left:10px;" class="btn btn-default" href="/issueview/repos/{{board.id}}/?filter={{filtstring}}">Edit Repos</a>
 {% endif %}<br>
@@ -15,10 +15,7 @@ Username: <a href="/issueview/board/show/">{{thisuser}}</a><br>
 <span style="margin: 10px;"><b><a style="margin: 10px;" class="btn btn-danger" href="/issueview/users/{{board.id}}/del/{{user.id}}/?filter={{filtstring}}">{{user.username}} X </a></b></span>
 {% endfor %}
 <form style="margin-left: 10px;" method="POST" action="/issueview/users/{{board.id}}/add/">
-{{userform.as_p}}
-{% csrf_token %}
-<input type="hidden" name="filter" value="{{filtstring}}"/>
-<input type="submit" value="Add User"/>
+{{userform}} {% csrf_token %} <input type="hidden" name="filter" value="{{filtstring}}"/> <input type="submit" value="Add User"/>
 </form>
 <form style="margin-left: 10px;" method="GET" action="/issueview/filter/{{board.user.username}}/{{board.board}}/">
 {{filterform}} <input type="submit" value="Filter"/>
