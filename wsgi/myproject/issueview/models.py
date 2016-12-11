@@ -24,6 +24,7 @@ class Issue(models.Model):
   status = models.CharField(max_length=50)
   comments = models.TextField()
   changed = models.BooleanField(default=False)
+  labels = models.CharField(max_length=200,default='')
 
 class Repository(models.Model):
   board = models.ForeignKey(Board)

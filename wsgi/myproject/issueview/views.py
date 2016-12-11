@@ -53,6 +53,14 @@ def pull_issues(REPO, access_token, token_type):
         break
   return issues
 
+def extract_labels(issue):
+  labelstr=""
+  for label in issue["labels"]:
+    if len(labelstr) != 0:
+      labelstr+=","
+    labelstr+=str(label["name"])
+  return labelstr
+
 def create_new(board, issue, user):
   saved = Issue()
   saved.board = board
@@ -71,6 +79,7 @@ def create_new(board, issue, user):
   saved.changed = False
   saved.release = "New"
   saved.comments = "None"
+  saved.labels=extract_labels(issue)
   saved.save()
    
 def copy_existing(saved,issue,user):
@@ -102,6 +111,10 @@ def copy_existing(saved,issue,user):
   if saved.status != issue['state']:
     saved.changed = True
     saved.status = issue['state']
+  newlabels=extract_labels(issue)
+  if saved.labels != newlabels:
+    saved.changed = True
+    saved.status = newlabels
   saved.save()
 
 # Create your views here.
@@ -133,6 +146,7 @@ def issues_update(request,issueid):
 def apply_filter(issues, filt):
   filtlist = filt.split(",")
   print "filt:"+str(filtlist)
+  needs_label_filter=None
   for f in filtlist:
     fvals = f.split(":")
     fname = fvals[0]
@@ -146,7 +160,9 @@ def apply_filter(issues, filt):
       issues= issues.filter(status=fv)
     elif fname == 'repository':
       issues= issues.filter(repository=fv)
-  return issues
+    elif fname == "labels":
+      needs_label_filter=fvals
+  return issues,needs_label_filter
 
 def calculate_filterform(filt):
   if len(filt) == 0:
@@ -166,6 +182,9 @@ def calculate_filterform(filt):
   filterform=Filterform(initial=filtdata)
   return filterform
 
+def search_issues_by_label(labelsearch, issue_list):
+  return issue_list
+  
 
 @login_required(login_url=('/login/'))
 def issues_show(request, owner, board):
@@ -191,7 +210,9 @@ def issues_show(request, owner, board):
     issue_list = Issue.objects.filter(board__board=board)
     users = ReadPermissions.objects.filter(board=boards[0])
     if filt != "":
-      issue_list = apply_filter(issue_list, str(filt))
+      issue_list,labelsearch = apply_filter(issue_list, str(filt))
+      if labelsearch:
+        issue_list = search_issues_by_label(labelsearch, issue_list)
     randomstr = ''.join(random.choice(string.letters) for i in xrange(10))
     board_state_secret=str(boards[0].id)+"~"+str(filt)+"~"+randomstr
     oauth_details = OauthCheck()

@@ -23,7 +23,7 @@ Username: <a href="/issueview/board/show/">{{thisuser}}</a><br>
 
 <table style="margin-top:10px;" class="table table-striped">
 <tr>
-<th>repository</th><th>id</th><th>title</th><th>assigned</th><th>status</th><th>created</th><th>updated</th><th>release</th><th>comments</th><th>actions</th>
+<th>repository</th><th>id</th><th>title</th><th>assigned</th><th>status</th><th>created</th><th>updated</th><th>labels</th><th>release</th><th>comments</th><th>actions</th>
 </tr>
 {% for issue in issues %}
 {% if issue.changed %}
@@ -32,7 +32,7 @@ Username: <a href="/issueview/board/show/">{{thisuser}}</a><br>
 <tr>
 {% endif %}
 <form action="/issueview/update/{{issue.id}}/" method="POST" id="issue_{{issue.id}}">
-<td>{{issue.repository}}</td><td><a target="_" href="{{issue.url}}">{{issue.issueid}}</a></td><td>{{issue.title}}</td><td>{{issue.assigned}}</td><td>{{issue.status}}</td><td>{{issue.created}}</td><td>{{issue.updated}}</td><td><input name="release" type="text" value="{{issue.release}}"/></td>
+<td>{{issue.repository}}</td><td><a target="_" href="{{issue.url}}">{{issue.issueid}}</a></td><td>{{issue.title}}</td><td>{{issue.assigned}}</td><td>{{issue.status}}</td><td>{{issue.created}}</td><td>{{issue.updated}}</td><td>{{issue.labels}}</td><td><input name="release" type="text" value="{{issue.release}}"/></td>
 <td><textarea name="comments" form="issue_{{issue.id}}">{{issue.comments}}</textarea></td><td><input type="submit" value="Update"/></td>
 {% csrf_token %}
 <input type="hidden" name="filter" value="{{filtstring}}"/>
