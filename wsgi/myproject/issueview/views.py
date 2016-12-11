@@ -161,7 +161,7 @@ def apply_filter(issues, filt):
     elif fname == 'repository':
       issues= issues.filter(repository=fv)
     elif fname == "labels":
-      needs_label_filter=fvals
+      needs_label_filter=fv
   return issues,needs_label_filter
 
 def calculate_filterform(filt):
