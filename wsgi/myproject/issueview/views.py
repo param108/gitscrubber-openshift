@@ -121,7 +121,7 @@ def issues_update(request,issueid):
     filt = request.POST.get("filter","")
     filtstring=""
     if len(filt) > 0:
-      filtstring="?filter="+filt
+      filtstring="?"+urllib.urlencode({"filter":filt})
     ret = HttpResponseRedirect("/issueview/show/"+issue.board.user.username+"/"+issue.board.board+"/"+filtstring)
     add_never_cache_headers(ret)
     return ret
@@ -309,7 +309,7 @@ def issues_authorize(request):
       github_rc = 1
     filtstring=""
     if len(filt) > 0:
-      filtstring="?filter="+filt
+      filtstring="?"+urllib.urlencode({"filter":filt})
     if github_rc != 0:
       ret = render(request, "issueview/github_error.html", { "url": "/issueview/show/"+board.user.username+"/"+board.board+"/"+filtstring})
     else:
@@ -334,7 +334,7 @@ def issues_repo_delete(request, boardid, repoid):
   repo[0].delete()
   filtstring = request.GET.get("filter","")
   if len(filtstring):
-    ret = HttpResponseRedirect('/issueview/repos/'+boardid+"/"+"?filter="+filtstring)
+    ret = HttpResponseRedirect('/issueview/repos/'+boardid+"/"+"?"+urllib.urlencode({"filter":filtstring}))
   else:
     ret = HttpResponseRedirect('/issueview/repos/'+boardid+"/")
   add_never_cache_headers(ret)
@@ -440,7 +440,7 @@ def user_add(request, boardid):
       newuser.username = userform.cleaned_data["username"]
       newuser.save()
     if len(filtstring) > 0:
-      filtstring = "?filter="+filtstring
+      filtstring = "?"+urllib.urlencode({"filter":filtstring})
     ret  = HttpResponseRedirect("/issueview/show/"+boards[0].user.username+"/"+boards[0].board+"/"+filtstring)
     add_never_cache_headers(ret)
     return ret
@@ -457,7 +457,7 @@ def user_del(request, boardid, userid):
   if readperm[0].board == boards[0]:
     readperm[0].delete()
   if len(filtstring) > 0:
-    filtstring = "?filter="+filtstring
+    filtstring = "?"+urllib.urlencode({"filter":filtstring})
   ret  = HttpResponseRedirect("/issueview/show/"+boards[0].user.username+"/"+boards[0].board+"/"+filtstring)
   add_never_cache_headers(ret)
   return ret
