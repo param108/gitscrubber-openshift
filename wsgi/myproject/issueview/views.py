@@ -475,7 +475,7 @@ def issues_filter(request, owner, board):
           filtstring+=fname+":"+form.cleaned_data[fname].strip()
       if len(filtstring) > 0:
         filtstring = urllib.urlencode({"filter": filtstring})
-      ret  = HttpResponseRedirect("/issueview/show/"+owner+"/"+board+"/"+filtstring)
+      ret  = HttpResponseRedirect("/issueview/show/"+owner+"/"+board+"/?"+filtstring)
       return ret
   ret  = HttpResponseRedirect("/issueview/show/"+owner+"/"+board+"/")
   return ret
